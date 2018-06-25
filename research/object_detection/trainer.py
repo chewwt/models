@@ -214,7 +214,8 @@ def train(create_tensor_dict_fn,
           worker_job_name,
           is_chief,
           train_dir,
-          graph_hook_fn=None):
+          graph_hook_fn=None,
+          gpu_usage=None):
   """Training function for detection models.
 
   Args:
@@ -364,10 +365,13 @@ def train(create_tensor_dict_fn,
     # Soft placement allows placing on CPU ops without GPU implementation.
     session_config = tf.ConfigProto(allow_soft_placement=True,
                                     log_device_placement=False)
+    if gpu_usage is not None:    
+        session_config.gpu_options.per_process_gpu_memory_fraction = gpu_usage
 
     # Save checkpoints regularly.
     keep_checkpoint_every_n_hours = train_config.keep_checkpoint_every_n_hours
     saver = tf.train.Saver(
+        max_to_keep=train_config.max_checkpoints_to_keep,
         keep_checkpoint_every_n_hours=keep_checkpoint_every_n_hours)
 
     # Create ops required to initialize the model from a given checkpoint.
@@ -405,6 +409,7 @@ def train(create_tensor_dict_fn,
         summary_op=summary_op,
         number_of_steps=(
             train_config.num_steps if train_config.num_steps else None),
-        save_summaries_secs=120,
+        save_summaries_secs=train_config.save_summaries_secs,
+        save_interval_secs=train_config.checkpoint_save_interval_secs,
         sync_optimizer=sync_optimizer,
         saver=saver)

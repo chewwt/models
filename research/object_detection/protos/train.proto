@@ -106,4 +106,13 @@ message TrainConfig {
   // dictionary, so that they can be displayed in Tensorboard. Note that this
   // will lead to a larger memory footprint.
   optional bool retain_original_images = 23 [default=false];
+
+  // How often to save checkpoints
+  optional uint32 checkpoint_save_interval_secs = 25 [default=600];
+
+  // How often to save summaries
+  optional uint32 save_summaries_secs = 26 [default=120];
+
+  // How many checkpoint to keep
+  optional uint32 max_checkpoints_to_keep = 27 [default=5];
 }

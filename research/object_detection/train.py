@@ -82,6 +82,9 @@ flags.DEFINE_string('input_config_path', '',
 flags.DEFINE_string('model_config_path', '',
                     'Path to a model_pb2.DetectionModel config file.')
 
+flags.DEFINE_float('gpu_usage', None,
+                   'fraction of gpu to use')
+
 FLAGS = flags.FLAGS
 
 
@@ -177,7 +180,8 @@ def main(_):
       worker_job_name,
       is_chief,
       FLAGS.train_dir,
-      graph_hook_fn=graph_rewriter_fn)
+      graph_hook_fn=graph_rewriter_fn,
+      gpu_usage=FLAGS.gpu_usage)
 
 
 if __name__ == '__main__':
